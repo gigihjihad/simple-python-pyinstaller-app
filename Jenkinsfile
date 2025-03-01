@@ -38,6 +38,7 @@ pipeline {
             agent {
                 docker {
                     image 'cdrx/pyinstaller-linux:python2'
+                    args '--restart=unless-stopped'
                 }
             }
             steps {
