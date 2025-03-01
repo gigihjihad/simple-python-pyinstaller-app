@@ -26,5 +26,36 @@ pipeline {
                 }
             }
         }
+        stage('Manual Approval') {
+            agent none
+            steps {
+                script {
+                    input message: 'Lanjutkan ke tahap Deploy?', ok: 'Proceed'
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'cdrx/pyinstaller-linux:python2'
+                }
+            }
+            steps {
+                sh 'pyinstaller --onefile sources/add2vals.py'
+            }
+            post {
+                success {
+                    archiveArtifacts 'dist/add2vals'
+                }
+            }
+        }
+        stage('Pause 1 Minute') {
+            agent none
+            steps {
+                echo "Menunggu 1 menit sebelum pipeline selesai..."
+                sh 'sleep 60' // Menunggu selama 60 detik
+                echo "Pipeline selesai."
+            }
+        }
     }
 }
